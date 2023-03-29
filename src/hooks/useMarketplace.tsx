@@ -15,7 +15,7 @@ const initialFormValue: FormState = {
 };
 
 export default function useMarketplace() {
-  const [_, setToken] = useState("");
+  const [token, setToken] = useState("");
   const [form, setForm] = useState<FormState>(initialFormValue);
 
   useEffect(() => {
@@ -37,13 +37,13 @@ export default function useMarketplace() {
     setForm((prev) => ({ ...prev, [inputName]: inputValue }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!_isFormValid()) {
       alert("Please fill all the form fields");
       return;
     }
 
-    alert("submitted");
+    await _signupToAWSMarketplace();
   };
 
   const _isFormValid = (): boolean => {
@@ -53,6 +53,36 @@ export default function useMarketplace() {
     }
 
     return true;
+  };
+
+  const _signupToAWSMarketplace = async (): Promise<void> => {
+    try {
+      const response = await fetch("/api/marketplace", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(_getPayload()),
+      });
+      const data = await response.json();
+      
+      console.log("data: ", data);
+      alert("AWS Marketplace signup Successfull: " + data.message);
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  const _getPayload = () => {
+    return {
+      contactPerson: form.name,
+      contactEmail: form.email,
+      companyName: form.company,
+      contactPhone: form.phone,
+      regToken: _getParsedToken(),
+    };
+  };
+
+  const _getParsedToken = (): string => {
+    return token.replace(/\s+/g, "+");
   };
 
   return { form, handleChangeInput, handleSubmit };
