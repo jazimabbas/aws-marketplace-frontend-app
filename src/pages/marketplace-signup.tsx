@@ -1,47 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "@/styles/marketplace.module.css";
-
-type FormState = {
-  name: string;
-  company: string;
-  email: string;
-  phone: string;
-};
-
-const initialFormValue: FormState = {
-  name: "",
-  company: "",
-  email: "",
-  phone: "",
-};
+import useMarketplace from "@/hooks/useMarketplace";
 
 export default function AWSMarketplaceSignup() {
-  const [form, setForm] = useState<FormState>(initialFormValue);
-
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputName = e.target.name;
-    const inputValue = e.target.value;
-
-    setForm((prev) => ({ ...prev, [inputName]: inputValue }));
-  };
-
-  const handleSubmit = () => {
-    if (!_isFormValid()) {
-      alert("Please fill all the form fields");
-      return;
-    }
-
-    alert("submitted");
-  };
-
-  const _isFormValid = (): boolean => {
-    const { name, company, email, phone } = form;
-    if (!name || !company || !email || !phone) {
-      return false;
-    }
-
-    return true;
-  };
+  const { form, handleChangeInput, handleSubmit } = useMarketplace();
 
   return (
     <div className={styles.container}>
